@@ -3,9 +3,10 @@
 import { useState } from "react"
 import { supabase } from "../lib/supabaseClient"
 import Image from "next/image"
-
+import { useRouter } from "next/navigation"
 
 export default function AuthPage() {
+  const router = useRouter() // 👈
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,14 +22,29 @@ export default function AuthPage() {
         : await supabase.auth.signUp({ email, password })
 
       if (error) throw error
-      alert(`${isLogin ? 'Login' : 'Signup'} successful!`)
+
+       // ✅ Redirigir si fue login
+        if (isLogin) {
+          router.push('/dashboard')
+        } else {
+          alert('¡Registro exitoso! Revisa tu correo electrónico para confirmar.')
+        }
+
     } catch (err: unknown) {
-      if (err instanceof Error)
-      setError(err.message)
+        if (err instanceof Error) {
+          if (err.message === 'Invalid login credentials') {
+              alert('Credenciales inválidas. Por favor, verifica tu correo y contraseña.')
+          } else if (err.message === 'Email no confirmado') {
+            setError('Deber confirmar tu correo antes de iniciar sesión.')
+          } else {
+            setError(err.message)
+          }
+        }
     } finally {
       setLoading(false)
     }
   }
+
 
 
   return (
@@ -48,21 +64,21 @@ export default function AuthPage() {
 
       <div className="w-full max-w-md space-y-7">
         <div className="text-left">
-          <h2 className="text-2xl font-sans font-medium text-black">Sign in to your account</h2>
-          <p className="text-sm font-sans text-gray-500">Enter your email and password</p>
+          <h2 className="text-2xl font-sans font-medium text-black">Inicia sesión en tu cuenta</h2>
+          <p className="text-sm font-sans text-gray-500">Introduce tu correo electrónico y contraseña</p>
         </div>
 
         <div className="space-y-4">
           <input
             type="email"
-            placeholder="name@example.com"
+            placeholder="nombre@ejemplo.com"
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300 font-sans"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <input 
             type="password"
-            placeholder="password" 
+            placeholder="contraseña" 
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300 font-sans"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -73,7 +89,7 @@ export default function AuthPage() {
         {isLogin && (
           <div className="text-right">
             <a href="#" className="text-gray-500 text-sm hover:underline font-sans">
-              Forgot password
+                Olvidé mi contraseña
             </a>
           </div>
         )}
@@ -84,24 +100,24 @@ export default function AuthPage() {
             disabled={loading}
             className="w-full bg-black text-white px-4 py-2 rounded-md hover:bg-blue-900 transition text-sm font-sans font-medium"
           >
-            {loading ? 'Processing...' :`Sign ${isLogin ? 'in' : 'up'}`}
+            {loading ? 'Procesando...' :`iniciar sesión ${isLogin ?  '' : ''}`}
           </button>
 
           <div className="text-sm text-center text-sans">
-            {isLogin ? 'Don’t have an account?' : 'Already have an account?'}
+            {isLogin ? '¿No tienes una cuenta?' : '¿Ya tienes una cuenta?'}
             {' '}
             <button
               onClick={() => setIsLogin(!isLogin)}
               className="text-black underline font-sans"
             >
-              {isLogin ? 'Sign up' : 'Sign in'}
+              {isLogin ? 'Regístrate' : 'Iniciar sesión'}
             </button>
           </div>
 
         <p className="text-sm text-gray-500 text-center font-sans">
           {isLogin
-            ? 'If you have an existing account, please sign in.'
-            : 'You can craete a new account using your email and password.'}
+            ? 'Si tienes una cuenta existente, por favor inicie sesión.'
+            : 'Puedes crear una nueva cuenta usando tu correo electrónico y contraseña.'}
         </p>
       </div>
     </div>
