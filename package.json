@@ -1,4 +1,16 @@
 {
+<<<<<<< HEAD
+  "name": "kivoff-os",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+=======
   "name": "web",
   "version": "0.1.0",
   "private": true,
@@ -28,4 +40,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   }
+>>>>>>> 6d8b12912f8df903c60df4cf7848d8c8f0322dc4
 }
